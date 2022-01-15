@@ -14,5 +14,6 @@ public interface ProgrammingLanguageDAO {
     List<String> findOtherLanguage(String id) throws SQLException;
     void updateList(String id_dev, String[] id_lang) throws SQLException;
     void deleteLanguageDeveloper(String id, String language) throws SQLException;
+    void saveLanguage(String language) throws SQLException;
 
 }

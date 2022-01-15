@@ -133,4 +133,13 @@ public class ProgrammingLanguageDAOImpl implements ProgrammingLanguageDAO{
         statement.executeUpdate();
     }
 
+    @Override
+    public void saveLanguage(String language) throws SQLException {
+        Connection connection = DBConnection.getConnection();
+        String sql = "INSERT INTO programminglanguage (language_name) VALUES (?)";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, language);
+        statement.executeUpdate();
+    }
+
 }

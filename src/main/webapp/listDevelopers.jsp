@@ -31,6 +31,7 @@
         <th>First Name</th>
         <th>Last Name</th>
         <th>Age</th>
+        <th>Stack</th>
         <th colspan=2>Action</th>
     </tr>
     </thead>

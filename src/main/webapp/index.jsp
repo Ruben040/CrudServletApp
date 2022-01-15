@@ -7,5 +7,7 @@
 <body>
 <a href="/Crud_war/allDevelopers">List Developers</a>
 <a href="/Crud_war/addDeveloper">Add Developer</a>
+<a href="/Crud_war/addLanguage">Add Language</a>
+
 </body>
 </html>

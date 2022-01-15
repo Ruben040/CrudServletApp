@@ -5,6 +5,7 @@
   Time: 15:00
   To change this template use File | Settings | File Templates.
 --%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <html>
 <head>
@@ -21,7 +22,11 @@
     <label>Age: <input type="number" min="0" minlength="1" name="age"></label>
     <br>
     <br>
-
+    <c:forEach var="lang" items="${requestScope.listLang}">
+        <label>
+                ${lang}: <input type="checkbox" name="language" value="${lang}"> <br>
+        </label>
+    </c:forEach>
     <button type="submit">Create!</button>
 </form>
 </body>

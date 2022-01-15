@@ -4,7 +4,6 @@ import ru.ruben.crud.DAO.DeveloperDao;
 import ru.ruben.crud.DAO.DeveloperDaoImpl;
 import ru.ruben.crud.model.Developer;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +16,7 @@ public class DeleteDeveloper extends HttpServlet {
     private final DeveloperDao developerDao = DeveloperDaoImpl.getInstance();
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String id = request.getParameter("id");
         try {
             Developer developer = developerDao.findById(id);

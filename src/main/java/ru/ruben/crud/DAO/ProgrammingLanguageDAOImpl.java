@@ -29,6 +29,8 @@ public class ProgrammingLanguageDAOImpl implements ProgrammingLanguageDAO{
         while (resultSet.next()){
             languages.add(resultSet.getString("language_name"));
         }
+        statement.close();
+        connection.close();
         return languages;
     }
 
@@ -43,6 +45,8 @@ public class ProgrammingLanguageDAOImpl implements ProgrammingLanguageDAO{
         if (resultSet.next()){
             index = resultSet.getInt("language_id");
         }
+        statement.close();
+        connection.close();
         return index;
     }
 
@@ -61,14 +65,16 @@ public class ProgrammingLanguageDAOImpl implements ProgrammingLanguageDAO{
             statement.setInt(1, developer.getId());
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()){
-
                 languages.add(resultSet.getString("language_name"));
             }
             if (languages.size() != 0) {
                 hashMap.put(developer.getId(), new ArrayList<>(languages));
                 languages.clear();
             }
+            statement.close();
         }
+
+        connection.close();
         return hashMap;
     }
 
@@ -87,6 +93,8 @@ public class ProgrammingLanguageDAOImpl implements ProgrammingLanguageDAO{
         while (resultSet.next()){
             languages.add(resultSet.getString("language_name"));
         }
+        statement.close();
+        connection.close();
         return languages;
     }
 
@@ -105,6 +113,8 @@ public class ProgrammingLanguageDAOImpl implements ProgrammingLanguageDAO{
         while (resultSet.next()){
             languages.add(resultSet.getString("language_name"));
         }
+        statement.close();
+        connection.close();
         return languages;
     }
 
@@ -118,8 +128,9 @@ public class ProgrammingLanguageDAOImpl implements ProgrammingLanguageDAO{
             statement.setInt(1, Integer.parseInt(id_dev));
             statement.setInt(2, idByLanguage);
             statement.executeUpdate();
+            statement.close();
         }
-
+        connection.close();
     }
 
     @Override
@@ -131,6 +142,8 @@ public class ProgrammingLanguageDAOImpl implements ProgrammingLanguageDAO{
         statement.setInt(1, Integer.parseInt(id));
         statement.setInt(2, idByLanguage);
         statement.executeUpdate();
+        statement.close();
+        connection.close();
     }
 
     @Override
@@ -140,6 +153,8 @@ public class ProgrammingLanguageDAOImpl implements ProgrammingLanguageDAO{
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setString(1, language);
         statement.executeUpdate();
+        statement.close();
+        connection.close();
     }
 
 }

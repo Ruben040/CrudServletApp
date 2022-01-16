@@ -1,9 +1,5 @@
 package ru.ruben.crud.controllers;
 
-import ru.ruben.crud.DAO.DeveloperDao;
-import ru.ruben.crud.DAO.DeveloperDaoImpl;
-import ru.ruben.crud.DAO.ProgrammingLanguageDAO;
-import ru.ruben.crud.DAO.ProgrammingLanguageDAOImpl;
 import ru.ruben.crud.model.Developer;
 import ru.ruben.crud.service.DeveloperService;
 import ru.ruben.crud.service.DeveloperServiceImpl;
@@ -14,7 +10,6 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 

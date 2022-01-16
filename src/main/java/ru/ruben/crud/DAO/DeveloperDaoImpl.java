@@ -36,6 +36,8 @@ public class DeveloperDaoImpl implements DeveloperDao {
             lastName = resultSet.getString("lastName");
             age = resultSet.getInt("age");
         }
+        statement.close();
+        connection.close();
         return new Developer(id_dev, firstName, lastName, age);
     }
 
@@ -54,6 +56,8 @@ public class DeveloperDaoImpl implements DeveloperDao {
             Developer developer = new Developer(id_dev, firstName, lastName, age);
             developers.add(developer);
         }
+        statement.close();
+        connection.close();
         return developers;
     }
 
@@ -80,7 +84,8 @@ public class DeveloperDaoImpl implements DeveloperDao {
         statement.setInt(3, developer.getAge());
         statement.setInt(4, developer.getId());
         statement.executeUpdate();
-
+        statement.close();
+        connection.close();
     }
 
     @Override
@@ -91,6 +96,8 @@ public class DeveloperDaoImpl implements DeveloperDao {
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setInt(1, developer.getId());
         statement.executeUpdate();
+        statement.close();
+        connection.close();
     }
 
     public int getIndex(Developer developer) throws SQLException {
@@ -105,6 +112,8 @@ public class DeveloperDaoImpl implements DeveloperDao {
         if (resultSet.next()){
             index = resultSet.getInt("id");
         }
+        statement.close();
+        connection.close();
         return index;
     }
 
@@ -120,7 +129,9 @@ public class DeveloperDaoImpl implements DeveloperDao {
             int idByLanguage = programmingLanguageDAO.getIdByLanguage(language);
             statement.setInt(2, idByLanguage);
             statement.executeUpdate();
+            statement.close();
         }
+        connection.close();
 
     }
 }

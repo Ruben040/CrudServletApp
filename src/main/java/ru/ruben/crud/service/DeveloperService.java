@@ -2,7 +2,6 @@ package ru.ruben.crud.service;
 
 import ru.ruben.crud.model.Developer;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public interface DeveloperService {

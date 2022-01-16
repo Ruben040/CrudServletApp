@@ -37,12 +37,7 @@ public class AddDeveloperServlet extends HttpServlet {
         int age = Integer.parseInt(request.getParameter("age"));
         String[] language = request.getParameterValues("language");
         Developer developer = new Developer(firstName, lastName, age);
-        if (language == null) {
-            developerService.save(developer);
-        }
-        else {
-            developerService.saveWithLanguage(developer, language);
-        }
+        developerService.save(developer , language);
         response.sendRedirect(request.getContextPath());
     }
 }

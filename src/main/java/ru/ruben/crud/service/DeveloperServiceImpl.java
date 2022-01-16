@@ -21,59 +21,29 @@ public class DeveloperServiceImpl implements DeveloperService {
 
     @Override
     public Developer findById(String id){
-        try {
-            return developerDao.findById(id);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-
+        return developerDao.findById(id);
     }
 
     @Override
     public List<Developer> findAll(){
-        try {
-            return developerDao.findAll();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-
+        return developerDao.findAll();
     }
 
     @Override
-    public void save(Developer o){
-        try {
-            developerDao.save(o);
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public boolean save(Developer o, String[] language){
+        if (language == null) {
+            return developerDao.save(o);
         }
+        else return developerDao.saveWithLanguage(o, language);
     }
 
     @Override
-    public void update(Developer o){
-        try {
-            developerDao.update(o);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public boolean update(Developer o){
+       return developerDao.update(o);
     }
 
     @Override
-    public void delete(Developer o) {
-        try {
-            developerDao.delete(o);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void saveWithLanguage(Developer developer, String[] languages) {
-        try {
-            developerDao.saveWithLanguage(developer, languages);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public boolean delete(Developer o) {
+        return developerDao.delete(o);
     }
 }

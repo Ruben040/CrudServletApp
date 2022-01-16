@@ -23,83 +23,45 @@ public class ProgrammingLanguageServiceImpl implements ProgrammingLanguageServic
 
     @Override
     public List<String> findAllLanguage() {
-        try {
-            return programmingLanguageDAO.findAllLanguage();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-
+        return programmingLanguageDAO.findAllLanguage();
     }
 
     @Override
     public int getIdByLanguage(String language_name) {
-        try {
-            return programmingLanguageDAO.getIdByLanguage(language_name);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return 0;
-        }
-
+        return programmingLanguageDAO.getIdByLanguage(language_name);
     }
 
     @Override
     public Map<Integer, List<String>> getLanguageByDevelopers(List<Developer> developers) {
-        try {
-            return programmingLanguageDAO.getLanguageByDevelopers(developers);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-
+        return programmingLanguageDAO.getLanguageByDevelopers(developers);
     }
 
     @Override
     public List<String> findByDeveloper(String id) {
-        try {
-            return programmingLanguageDAO.findByDeveloper(id);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-
+        return programmingLanguageDAO.findByDeveloper(id);
     }
 
     @Override
     public List<String> findOtherLanguage(String id) {
-        try {
-            return programmingLanguageDAO.findOtherLanguage(id);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-
+        return programmingLanguageDAO.findOtherLanguage(id);
     }
 
     @Override
-    public void updateList(String id_dev, String[] id_lang) {
-        try {
-            programmingLanguageDAO.updateList(id_dev, id_lang);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public boolean updateList(String id_dev, String[] id_lang) {
+        return programmingLanguageDAO.updateList(id_dev, id_lang);
     }
 
     @Override
-    public void deleteLanguageDeveloper(String id, String language) {
-        try {
-            programmingLanguageDAO.deleteLanguageDeveloper(id, language);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public boolean deleteLanguageDeveloper(String id, String language) {
+        return programmingLanguageDAO.deleteLanguageDeveloper(id, language);
     }
 
     @Override
-    public void saveLanguage(String language) {
-        try {
-            programmingLanguageDAO.saveLanguage(language);
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public boolean saveLanguage(String language) {
+        List<String> allLanguage = programmingLanguageDAO.findAllLanguage();
+        if (!allLanguage.contains(language)) {
+            return programmingLanguageDAO.saveLanguage(language);
         }
+        return false;
     }
 }

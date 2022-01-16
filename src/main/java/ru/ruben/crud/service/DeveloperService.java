@@ -7,8 +7,7 @@ import java.util.List;
 public interface DeveloperService {
     Developer findById(String id);
     List<Developer> findAll();
-    void save(Developer o);
-    void update(Developer o);
-    void delete(Developer o);
-    void saveWithLanguage(Developer developer, String[] languages);
+    boolean save(Developer o, String[] lang);
+    boolean update(Developer o);
+    boolean delete(Developer o);
 }

@@ -11,7 +11,7 @@ public interface ProgrammingLanguageService {
     Map<Integer, List<String>> getLanguageByDevelopers(List<Developer> developers);
     List<String> findByDeveloper(String id);
     List<String> findOtherLanguage(String id);
-    void updateList(String id_dev, String[] id_lang);
-    void deleteLanguageDeveloper(String id, String language);
-    void saveLanguage(String language);
+    boolean updateList(String id_dev, String[] id_lang);
+    boolean deleteLanguageDeveloper(String id, String language);
+    boolean saveLanguage(String language);
 }

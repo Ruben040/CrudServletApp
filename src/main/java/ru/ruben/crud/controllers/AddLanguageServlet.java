@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 
 @WebServlet("/addLanguage")
 public class AddLanguageServlet extends HttpServlet {
@@ -27,10 +26,7 @@ public class AddLanguageServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
         String language = request.getParameter("language");
-        List<String> allLanguage = programmingLanguageService.findAllLanguage();
-        if (!allLanguage.contains(language)){
-            programmingLanguageService.saveLanguage(language);
-        }
+        programmingLanguageService.saveLanguage(language);
         response.sendRedirect(request.getContextPath());
     }
 }

@@ -12,7 +12,11 @@
     <title>Title</title>
 </head>
 <body>
-
+<a href="/Crud_war/allDevelopers">List Developers</a>
+<a href="/Crud_war/addDeveloper">Add Developer</a>
+<a href="/Crud_war/addLanguage">Add Language</a>
+<br>
+<br>
 <form method="post" action="<c:url value='/updateDeveloper'/>">
 
     <label>First Name: <input type="text" minlength="3" name="firstName" value="${requestScope.dev.getFirstName()}"/></label>

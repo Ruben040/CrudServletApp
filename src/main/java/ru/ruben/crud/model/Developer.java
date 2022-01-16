@@ -1,6 +1,7 @@
 package ru.ruben.crud.model;
 
 public class Developer {
+
     private int id;
     private String firstName;
     private String lastName;

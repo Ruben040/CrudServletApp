@@ -1,7 +1,10 @@
 package ru.ruben.crud.controllers;
 
 import ru.ruben.crud.DAO.ProgrammingLanguageDAOImpl;
-import ru.ruben.crud.model.Developer;
+import ru.ruben.crud.service.DeveloperService;
+import ru.ruben.crud.service.DeveloperServiceImpl;
+import ru.ruben.crud.service.ProgrammingLanguageService;
+import ru.ruben.crud.service.ProgrammingLanguageServiceImpl;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -15,7 +18,7 @@ import java.util.List;
 
 @WebServlet("/addLanguage")
 public class AddLanguageServlet extends HttpServlet {
-    private final ProgrammingLanguageDAOImpl programmingLanguageDAO = ProgrammingLanguageDAOImpl.getInstance();
+    private final ProgrammingLanguageService programmingLanguageService = ProgrammingLanguageServiceImpl.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -28,13 +31,9 @@ public class AddLanguageServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
         String language = request.getParameter("language");
-        try {
-            List<String> allLanguage = programmingLanguageDAO.findAllLanguage();
-            if (!allLanguage.contains(language)){
-                programmingLanguageDAO.saveLanguage(language);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        List<String> allLanguage = programmingLanguageService.findAllLanguage();
+        if (!allLanguage.contains(language)){
+            programmingLanguageService.saveLanguage(language);
         }
         response.sendRedirect(request.getContextPath());
     }

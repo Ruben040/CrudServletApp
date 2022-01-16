@@ -6,24 +6,11 @@
     <title>Title</title>
 </head>
 <body>
-
-<%--<ul>--%>
-<%-- <c:forEach var="developer" items="${list}">--%>
-<%--     <li>${developer.getFirstName()}--%>
-<%--        ${developer.getLastName()}--%>
-<%--        ${developer.getAge()}</li>--%>
-<%--     <form method="post" action="<c:url value="/Delete" />">--%>
-<%--         <input type="number" hidden name="id" value="${developer.getId()}">--%>
-<%--         <input type="submit" name="delete" value="Delete">--%>
-<%--     </form>--%>
-
-<%--     <form method="post" action="<c:url value="/Update" />">--%>
-<%--         <input type="number" hidden name="id" value="${developer.getId()}">--%>
-<%--         <input type="submit" name="Update" value="Update">--%>
-<%--     </form>--%>
-<%-- </c:forEach>--%>
-<%--</ul>--%>
-
+<a href="/Crud_war/allDevelopers">List Developers</a>
+<a href="/Crud_war/addDeveloper">Add Developer</a>
+<a href="/Crud_war/addLanguage">Add Language</a>
+<br>
+<br>
 <table>
     <thead>
     <tr>

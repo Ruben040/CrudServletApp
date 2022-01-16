@@ -1,7 +1,11 @@
 package ru.ruben.crud.DAO;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import ru.ruben.crud.model.Developer;
 import ru.ruben.crud.util.DBConnection;
+import ru.ruben.crud.util.HibernateConnector;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -46,25 +50,31 @@ public class DeveloperDaoImpl implements DeveloperDao {
 
     @Override
     public List<Developer> findAll(){
-        try{
-            Connection connection = DBConnection.getConnection();
-            List<Developer> developers = new ArrayList<>();
-            String sql = "SELECT * FROM developers";
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
-            while (resultSet.next()) {
-                int id_dev = resultSet.getInt("id");
-                String firstName = resultSet.getString("firstName");
-                String lastName = resultSet.getString("lastName");
-                int age = resultSet.getInt("age");
-                Developer developer = new Developer(id_dev, firstName, lastName, age);
-                developers.add(developer);
-            }
-            return developers;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
+        SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
+        Session currentSession = sessionFactory.getCurrentSession();
+        Transaction transaction = currentSession.beginTransaction();
+        List<Developer> from_developers = currentSession.createQuery("from Developers").list();
+        transaction.commit();
+        return from_developers;
+//        try{
+//            Connection connection = DBConnection.getConnection();
+//            List<Developer> developers = new ArrayList<>();
+//            String sql = "SELECT * FROM developers";
+//            Statement statement = connection.createStatement();
+//            ResultSet resultSet = statement.executeQuery(sql);
+//            while (resultSet.next()) {
+//                int id_dev = resultSet.getInt("id");
+//                String firstName = resultSet.getString("firstName");
+//                String lastName = resultSet.getString("lastName");
+//                int age = resultSet.getInt("age");
+//                Developer developer = new Developer(id_dev, firstName, lastName, age);
+//                developers.add(developer);
+//            }
+//            return developers;
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
     }
 
     @Override

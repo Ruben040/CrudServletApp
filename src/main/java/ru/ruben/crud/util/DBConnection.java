@@ -1,5 +1,11 @@
 package ru.ruben.crud.util;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -28,4 +34,5 @@ public class DBConnection {
         }
         return connection;
     }
+
 }

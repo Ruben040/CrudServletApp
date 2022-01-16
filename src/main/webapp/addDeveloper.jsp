@@ -12,7 +12,7 @@
     <title>Title</title>
 </head>
 <body>
-<form method="post" action="/Crud_war/addDeveloper">
+<form method="post" action="<c:url value="/addDeveloper"/>">
     <label>First Name:<input type="text" minlength="3" name="firstName"></label>
     <br>
     <br>

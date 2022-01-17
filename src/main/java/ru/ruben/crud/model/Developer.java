@@ -1,7 +1,5 @@
 package ru.ruben.crud.model;
 
-import org.hibernate.annotations.GeneratorType;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -17,7 +15,7 @@ public class Developer {
     private String lastName;
     @Column(name = "age")
     private int age;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.REMOVE)
     @JoinTable(name = "dev_prog_lang",
             joinColumns = {@JoinColumn(name = "developer_id")},
             inverseJoinColumns = {@JoinColumn(name = "prog_lang_id")})

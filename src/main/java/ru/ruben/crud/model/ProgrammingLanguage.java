@@ -1,5 +1,6 @@
 package ru.ruben.crud.model;
 
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -11,15 +12,18 @@ public class ProgrammingLanguage {
     @Column(name = "language_id", nullable = false)
     private Integer id;
 
-    @Lob
     @Column(name = "language_name")
     private String languageName;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "dev_prog_lang",
-        joinColumns = {@JoinColumn(name = "prog_lang_id")},
-        inverseJoinColumns = {@JoinColumn(name = "developer_id")})
+    @ManyToMany(mappedBy = "programmingLanguages", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private List<Developer> developers;
+
+    public ProgrammingLanguage(String languageName) {
+        this.languageName = languageName;
+    }
+
+    public ProgrammingLanguage() {
+    }
 
     public List<Developer> getDevelopers() {
         return developers;

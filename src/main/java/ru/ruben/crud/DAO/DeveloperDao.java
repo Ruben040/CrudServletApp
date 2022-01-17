@@ -1,9 +1,10 @@
 package ru.ruben.crud.DAO;
 
 import ru.ruben.crud.model.Developer;
+import ru.ruben.crud.model.ProgrammingLanguage;
 
-import java.sql.SQLException;
+import java.util.List;
 
 public interface DeveloperDao extends Dao<Developer, String>{
-    boolean saveWithLanguage(Developer developer, String[] languages);
+    void saveWithLanguage(Developer developer, String[] languages);
 }

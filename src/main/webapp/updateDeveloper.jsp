@@ -19,6 +19,7 @@
 <br>
 <form method="post" action="<c:url value='/updateDeveloper'/>">
 
+    <input type="text" hidden name="id" value="${requestScope.dev.getId()}">
     <label>First Name: <input type="text" minlength="3" name="firstName" value="${requestScope.dev.getFirstName()}"/></label>
     <br>
     <br>

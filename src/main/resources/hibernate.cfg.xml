@@ -16,5 +16,6 @@
         <property name="hbm2ddl.auto">update</property>
         <mapping class="ru.ruben.crud.model.Developer"/>
         <mapping class="ru.ruben.crud.model.ProgrammingLanguage"/>
+        <mapping class="ru.ruben.crud.model.DevProgrammingLang"/>
     </session-factory>
 </hibernate-configuration>

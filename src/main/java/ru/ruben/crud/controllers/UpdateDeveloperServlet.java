@@ -24,15 +24,13 @@ public class UpdateDeveloperServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
 
+        int id = Integer.parseInt(request.getParameter("id"));
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
-        String[] languages = request.getParameterValues("language");
-        if (languages != null){
-            programmingLanguageService.updateList(id, languages);
-        }
         int age = Integer.parseInt(request.getParameter("age"));
-        developerService.update(new Developer(Integer.parseInt(id),firstName, lastName, age));
-
+        Developer developer = new Developer(id,firstName, lastName, age);
+        String[] languages = request.getParameterValues("language");
+        programmingLanguageService.updateList(developer, languages);
         response.sendRedirect(request.getContextPath() + "/allDevelopers");
 
     }
@@ -42,7 +40,7 @@ public class UpdateDeveloperServlet extends HttpServlet {
         id = request.getParameter("id");
         Developer developer = developerService.findById(id);
         List<String> lang= programmingLanguageService.findByDeveloper(id);
-        List<String> otherLanguage = programmingLanguageService.findOtherLanguage(id);
+        List<String> otherLanguage = programmingLanguageService.findAllLanguage();
         request.setAttribute("dev", developer);
         request.setAttribute("lang", lang);
         request.setAttribute("otherLang", otherLanguage);

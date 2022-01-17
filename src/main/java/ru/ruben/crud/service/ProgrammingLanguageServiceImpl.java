@@ -1,17 +1,23 @@
 package ru.ruben.crud.service;
 
 
+import ru.ruben.crud.DAO.DeveloperDao;
+import ru.ruben.crud.DAO.DeveloperDaoImpl;
 import ru.ruben.crud.DAO.ProgrammingLanguageDAO;
 import ru.ruben.crud.DAO.ProgrammingLanguageDAOImpl;
 import ru.ruben.crud.model.Developer;
+import ru.ruben.crud.model.ProgrammingLanguage;
 
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ProgrammingLanguageServiceImpl implements ProgrammingLanguageService {
 
     private final ProgrammingLanguageDAO programmingLanguageDAO = ProgrammingLanguageDAOImpl.getInstance();
+    private final DeveloperDao developerDao = DeveloperDaoImpl.getInstance();
+
 
     private static class SingletonProgrammingLanguageService{
         private static final ProgrammingLanguageServiceImpl INIT = new ProgrammingLanguageServiceImpl();
@@ -23,7 +29,7 @@ public class ProgrammingLanguageServiceImpl implements ProgrammingLanguageServic
 
     @Override
     public List<String> findAllLanguage() {
-        return programmingLanguageDAO.findAllLanguage();
+        return programmingLanguageDAO.findAllLanguage().stream().map(ProgrammingLanguage::getLanguageName).collect(Collectors.toList());
     }
 
     @Override
@@ -41,27 +47,28 @@ public class ProgrammingLanguageServiceImpl implements ProgrammingLanguageServic
         return programmingLanguageDAO.findByDeveloper(id);
     }
 
-    @Override
-    public List<String> findOtherLanguage(String id) {
-        return programmingLanguageDAO.findOtherLanguage(id);
-    }
 
     @Override
-    public boolean updateList(String id_dev, String[] id_lang) {
-        return programmingLanguageDAO.updateList(id_dev, id_lang);
-    }
-
-    @Override
-    public boolean deleteLanguageDeveloper(String id, String language) {
-        return programmingLanguageDAO.deleteLanguageDeveloper(id, language);
-    }
-
-    @Override
-    public boolean saveLanguage(String language) {
-        List<String> allLanguage = programmingLanguageDAO.findAllLanguage();
-        if (!allLanguage.contains(language)) {
-            return programmingLanguageDAO.saveLanguage(language);
+    public void updateList(Developer developer, String[] id_lang) {
+        if (id_lang != null) {
+            programmingLanguageDAO.updateList(developer, id_lang);
         }
-        return false;
+        else developerDao.update(developer);
+    }
+
+    @Override
+    public void deleteLanguageDeveloper(String id, String language) {
+        programmingLanguageDAO.deleteLanguageDeveloper(id, language);
+    }
+
+
+    @Override
+    public void saveLanguage(String language) {
+        List<String> languages = findAllLanguage();
+        List<String> allLanguage = new ArrayList<>(languages);
+        if (!allLanguage.contains(language)) {
+            ProgrammingLanguage programmingLanguage = new ProgrammingLanguage(language);
+            programmingLanguageDAO.saveLanguage(programmingLanguage);
+        }
     }
 }

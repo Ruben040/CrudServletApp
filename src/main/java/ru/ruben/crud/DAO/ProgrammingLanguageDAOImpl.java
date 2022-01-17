@@ -1,9 +1,15 @@
 package ru.ruben.crud.DAO;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
+import ru.ruben.crud.model.DevProgrammingLang;
+import ru.ruben.crud.model.DevProgrammingLangId;
 import ru.ruben.crud.model.Developer;
-import ru.ruben.crud.util.DBConnection;
+import ru.ruben.crud.model.ProgrammingLanguage;
+import ru.ruben.crud.util.HibernateConnector;
 
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,165 +26,102 @@ public class ProgrammingLanguageDAOImpl implements ProgrammingLanguageDAO{
     }
 
     @Override
-    public List<String> findAllLanguage(){
-        try{
-            Connection connection = DBConnection.getConnection();
-            List<String> languages = new ArrayList<>();
-            String sql = "SELECT * FROM programminglanguage";
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
-            while (resultSet.next()) {
-                languages.add(resultSet.getString("language_name"));
-            }
-            return languages;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public List<ProgrammingLanguage> findAllLanguage(){
+        SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        List<ProgrammingLanguage> language = session.createQuery("from ProgrammingLanguage", ProgrammingLanguage.class).list();
+        transaction.commit();
+        session.close();
+        return language;
     }
 
     @Override
     public int getIdByLanguage(String language_name){
-        try{
-            Connection connection = DBConnection.getConnection();
-            int index = 0;
-            String sql = "SELECT language_id FROM programminglanguage WHERE language_name = ?";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, language_name);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                index = resultSet.getInt("language_id");
-            }
-            return index;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return 0;
-        }
+        SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        Query<ProgrammingLanguage> query = session.createQuery("from ProgrammingLanguage where languageName =:lang", ProgrammingLanguage.class);
+        query.setParameter("lang", language_name);
+        ProgrammingLanguage language =(ProgrammingLanguage) query.setMaxResults(1).getSingleResult();
+        int identifier = language.getId();
+        transaction.commit();
+        session.close();
+        return identifier;
     }
 
     @Override
     public Map<Integer, List<String>> getLanguageByDevelopers(List<Developer> developers){
-        try {
-            Connection connection = DBConnection.getConnection();
-            HashMap<Integer, List<String>> hashMap = new HashMap<>();
-            List<String> languages = new ArrayList<>();
-            String sql = "SELECT p.language_name " +
-                    "FROM developers dev " +
-                    "JOIN dev_prog_lang dpl on dev.id = dpl.developer_id " +
-                    "JOIN programminglanguage p on p.language_id = dpl.prog_lang_id " +
-                    "WHERE dev.id = ?";
-            for (Developer developer : developers) {
-                PreparedStatement statement = connection.prepareStatement(sql);
-                statement.setInt(1, developer.getId());
-                ResultSet resultSet = statement.executeQuery();
-                while (resultSet.next()) {
-                    languages.add(resultSet.getString("language_name"));
-                }
-                if (languages.size() != 0) {
-                    hashMap.put(developer.getId(), new ArrayList<>(languages));
-                    languages.clear();
-                }
-            }
-            return hashMap;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
+        Map<Integer, List<String>> map = new HashMap<>();
+        for(Developer developer: developers){
+            int id = developer.getId();
+            List<String> byDeveloper = findByDeveloper(String.valueOf(id));
+            map.put(id, byDeveloper);
         }
+        return map;
     }
 
     @Override
     public List<String> findByDeveloper(String id){
-        try{
-            Connection connection = DBConnection.getConnection();
-            List<String> languages = new ArrayList<>();
-            String sql = "SELECT p.language_name " +
-                    "FROM developers dev " +
-                    "JOIN dev_prog_lang dpl on dev.id = dpl.developer_id " +
-                    "JOIN programminglanguage p on p.language_id = dpl.prog_lang_id " +
-                    "WHERE dev.id = ?";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, Integer.parseInt(id));
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                languages.add(resultSet.getString("language_name"));
-            }
-            return languages;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
+        List<String> lang = new ArrayList<>();
+        SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
+        Session currentSession = sessionFactory.openSession();
+        Transaction transaction = currentSession.beginTransaction();
+        Developer developer = currentSession.get(Developer.class, Integer.parseInt(id));
+        List<ProgrammingLanguage> programmingLanguages = developer.getProgrammingLanguages();
+        for (ProgrammingLanguage programmingLanguage: programmingLanguages){
+            lang.add(programmingLanguage.getLanguageName());
         }
+        transaction.commit();
+        currentSession.close();
+        return lang;
+    }
+
+
+    @Override
+    public void updateList(Developer developer, String[] languages){
+        int id = developer.getId();
+        DevProgrammingLang devProgrammingLang = new DevProgrammingLang();
+        DevProgrammingLangId devProgrammingLangId = new DevProgrammingLangId();
+        devProgrammingLangId.setDeveloperId(id);
+        SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        session.update(developer);
+        session.getTransaction().commit();
+        for (String lang: languages){
+            session.beginTransaction();
+            devProgrammingLangId.setProgLangId(getIdByLanguage(lang));
+            devProgrammingLang.setId(devProgrammingLangId);
+            session.merge(devProgrammingLang);
+            session.getTransaction().commit();
+        }
+        session.close();
     }
 
     @Override
-    public List<String> findOtherLanguage(String id){
-        try{
-            Connection connection = DBConnection.getConnection();
-            List<String> languages = new ArrayList<>();
-            String sql = "SELECT p.language_name FROM programminglanguage p " +
-                    "where p.language_id not in( " +
-                    "SELECT prog_lang_id FROM developers " +
-                    "JOIN dev_prog_lang dpl on developers.id = dpl.developer_id " +
-                    "WHERE developer_id = ?)";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, Integer.parseInt(id));
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                languages.add(resultSet.getString("language_name"));
-            }
-            return languages;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public void deleteLanguageDeveloper(String id, String language){
+        int idByLanguage1 = getIdByLanguage(language);
+        SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        DevProgrammingLangId devProgrammingLangId = new DevProgrammingLangId();
+        devProgrammingLangId.setDeveloperId(Integer.parseInt(id));
+        devProgrammingLangId.setProgLangId(idByLanguage1);
+        DevProgrammingLang devProgrammingLang = new DevProgrammingLang();
+        devProgrammingLang.setId(devProgrammingLangId);
+        session.delete(devProgrammingLang);
+        transaction.commit();
+        session.close();
     }
 
     @Override
-    public boolean updateList(String id_dev, String[] languages){
-        try{
-            Connection connection = DBConnection.getConnection();
-            boolean result = false;
-            String sql = "INSERT INTO dev_prog_lang (developer_id, prog_lang_id) VALUES (?, ?)";
-            for (String language : languages) {
-                int idByLanguage = getIdByLanguage(language);
-                PreparedStatement statement = connection.prepareStatement(sql);
-                statement.setInt(1, Integer.parseInt(id_dev));
-                statement.setInt(2, idByLanguage);
-                result = statement.executeUpdate() > 0;
-            }
-            return result;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean deleteLanguageDeveloper(String id, String language){
-        try{
-            Connection connection = DBConnection.getConnection();
-            int idByLanguage = getIdByLanguage(language);
-            String sql = "DELETE FROM dev_prog_lang WHERE developer_id = ? AND prog_lang_id = ?";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, Integer.parseInt(id));
-            statement.setInt(2, idByLanguage);
-            return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean saveLanguage(String language) {
-        try{
-            Connection connection = DBConnection.getConnection();
-            String sql = "INSERT INTO programminglanguage (language_name) VALUES (?)";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, language);
-            return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+    public void saveLanguage(ProgrammingLanguage language) {
+        SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        session.save(language);
+        transaction.commit();
+        session.close();
     }
 }

@@ -3,11 +3,14 @@ package ru.ruben.crud.DAO;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import ru.ruben.crud.model.DevProgrammingLang;
+import ru.ruben.crud.model.DevProgrammingLangId;
 import ru.ruben.crud.model.Developer;
-import ru.ruben.crud.util.DBConnection;
+import ru.ruben.crud.model.ProgrammingLanguage;
 import ru.ruben.crud.util.HibernateConnector;
 
-import java.sql.*;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,146 +28,79 @@ public class DeveloperDaoImpl implements DeveloperDao {
 
     @Override
     public Developer findById(String id){
-        try{
-            Connection connection = DBConnection.getConnection();
-            String sql = "SELECT * FROM developers WHERE id = ?";
-            int id_dev = 0, age = 0;
-            String firstName = "", lastName = "";
-
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, Integer.parseInt(id));
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                id_dev = resultSet.getInt("id");
-                firstName = resultSet.getString("firstName");
-                lastName = resultSet.getString("lastName");
-                age = resultSet.getInt("age");
-            }
-            return new Developer(id_dev, firstName, lastName, age);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
+        SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
+        Session currentSession = sessionFactory.openSession();
+        Transaction transaction = currentSession.beginTransaction();
+        Developer developer = currentSession.get(Developer.class, Integer.parseInt(id));
+        transaction.commit();
+        currentSession.close();
+        return developer;
     }
 
     @Override
     public List<Developer> findAll(){
+
         SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
-        Session currentSession = sessionFactory.getCurrentSession();
+        Session currentSession = sessionFactory.openSession();
         Transaction transaction = currentSession.beginTransaction();
-        List<Developer> from_developers = currentSession.createQuery("from Developers").list();
+        List<Developer> from_developers = currentSession.createQuery("from Developers", Developer.class).list();
         transaction.commit();
+        currentSession.close();
         return from_developers;
-//        try{
-//            Connection connection = DBConnection.getConnection();
-//            List<Developer> developers = new ArrayList<>();
-//            String sql = "SELECT * FROM developers";
-//            Statement statement = connection.createStatement();
-//            ResultSet resultSet = statement.executeQuery(sql);
-//            while (resultSet.next()) {
-//                int id_dev = resultSet.getInt("id");
-//                String firstName = resultSet.getString("firstName");
-//                String lastName = resultSet.getString("lastName");
-//                int age = resultSet.getInt("age");
-//                Developer developer = new Developer(id_dev, firstName, lastName, age);
-//                developers.add(developer);
-//            }
-//            return developers;
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//            return null;
-//        }
     }
 
     @Override
-    public boolean save(Developer developer){
-        try{
-            Connection connection = DBConnection.getConnection();
-            String sql = "INSERT INTO developers (firstName, lastName, age) VALUES(?, ?, ?)";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, developer.getFirstName());
-            statement.setString(2, developer.getLastName());
-            statement.setInt(3, developer.getAge());
-            return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+    public int save(Developer developer){
+        SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
+        Session currentSession = sessionFactory.openSession();
+        Transaction transaction = currentSession.beginTransaction();
+        int id = (Integer) currentSession.save(developer);
+        transaction.commit();
+        currentSession.close();
+        return id;
     }
 
     @Override
-    public boolean update(Developer developer){
-        try{
-            Connection connection = DBConnection.getConnection();
-            String sql = "UPDATE developers SET firstName = ?, lastName = ?, age = ? WHERE id = ?";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, developer.getFirstName());
-            statement.setString(2, developer.getLastName());
-            statement.setInt(3, developer.getAge());
-            statement.setInt(4, developer.getId());
-            return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+    public void update(Developer developer){
+        SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
+        Session currentSession = sessionFactory.openSession();
+        Transaction transaction = currentSession.beginTransaction();
+        currentSession.update(developer);
+        transaction.commit();
+        currentSession.close();
     }
 
     @Override
-    public boolean delete(Developer developer){
-        try{
-            Connection connection = DBConnection.getConnection();
-            String sql = "DELETE FROM developers WHERE id = ?";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, developer.getId());
-            return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public int getIndex(Developer developer) {
-        int index = 0;
-        try{
-            Connection connection = DBConnection.getConnection();
-            String sql = "SELECT id FROM developers WHERE firstName = ? AND lastName = ? AND age = ?";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, developer.getFirstName());
-            statement.setString(2, developer.getLastName());
-            statement.setInt(3, developer.getAge());
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                index = resultSet.getInt("id");
-            }
-            return index;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return 0;
-        }
+    public void delete(Developer developer){
+        SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
+        Session currentSession = sessionFactory.openSession();
+        Transaction transaction = currentSession.beginTransaction();
+        currentSession.delete(developer);
+        transaction.commit();
+        currentSession.close();
     }
 
 
     @Override
-    public boolean saveWithLanguage(Developer developer, String[] languages) {
-        try{
-            Connection connection = DBConnection.getConnection();
-            boolean result = false;
-            save(developer);
-            int index = getIndex(developer);
-            String sql = "INSERT INTO dev_prog_lang (developer_id, prog_lang_id) VALUES (?, ?)";
-            for (String language : languages) {
-                PreparedStatement statement = connection.prepareStatement(sql);
-                statement.setInt(1, index);
-                int idByLanguage = programmingLanguageDAO.getIdByLanguage(language);
-                statement.setInt(2, idByLanguage);
-                result = statement.executeUpdate() > 0;
-                //result = statement.executeUpdate() > 0;
-            }
-            return result;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+    public void saveWithLanguage(Developer developer, String[] languages) {
+        SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        int save = (Integer) session.save(developer);
+        transaction.commit();
+        session.close();
+        DevProgrammingLang devProgrammingLang = new DevProgrammingLang();
+        DevProgrammingLangId devProgrammingLangId = new DevProgrammingLangId();
+        devProgrammingLangId.setDeveloperId(save);
+        for (String lang: languages){
+            int idByLanguage = programmingLanguageDAO.getIdByLanguage(lang);
+            devProgrammingLangId.setProgLangId(idByLanguage);
+            devProgrammingLang.setId(devProgrammingLangId);
+            Session session1 = sessionFactory.openSession();
+            Transaction transaction1 = session1.beginTransaction();
+            session1.save(devProgrammingLang);
+            transaction1.commit();
+            session1.close();
         }
     }
 }

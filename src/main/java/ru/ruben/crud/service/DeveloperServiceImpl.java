@@ -4,7 +4,6 @@ import ru.ruben.crud.DAO.DeveloperDao;
 import ru.ruben.crud.DAO.DeveloperDaoImpl;
 import ru.ruben.crud.model.Developer;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class DeveloperServiceImpl implements DeveloperService {
@@ -30,20 +29,20 @@ public class DeveloperServiceImpl implements DeveloperService {
     }
 
     @Override
-    public boolean save(Developer o, String[] language){
-        if (language == null) {
-            return developerDao.save(o);
+    public void save(Developer o, String[] language){
+        if (language != null) {
+            developerDao.saveWithLanguage(o, language);
         }
-        else return developerDao.saveWithLanguage(o, language);
+        else developerDao.save(o);
     }
 
     @Override
-    public boolean update(Developer o){
-       return developerDao.update(o);
+    public void update(Developer o){
+       developerDao.update(o);
     }
 
     @Override
-    public boolean delete(Developer o) {
-        return developerDao.delete(o);
+    public void delete(Developer o) {
+        developerDao.delete(o);
     }
 }

@@ -6,7 +6,7 @@ import java.util.List;
 public interface Dao<T, ID>{
     T findById(ID id);
     List<T> findAll();
-    boolean save(T o);
-    boolean update(T o);
-    boolean delete(T o);
+    int save(T o);
+    void update(T o);
+    void delete(T o);
 }

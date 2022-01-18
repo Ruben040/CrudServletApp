@@ -6,12 +6,9 @@ import org.hibernate.Transaction;
 import ru.ruben.crud.model.DevProgrammingLang;
 import ru.ruben.crud.model.DevProgrammingLangId;
 import ru.ruben.crud.model.Developer;
-import ru.ruben.crud.model.ProgrammingLanguage;
 import ru.ruben.crud.util.HibernateConnector;
 
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.List;
 
 public class DeveloperDaoImpl implements DeveloperDao {
@@ -39,7 +36,6 @@ public class DeveloperDaoImpl implements DeveloperDao {
 
     @Override
     public List<Developer> findAll(){
-
         SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
         Session currentSession = sessionFactory.openSession();
         Transaction transaction = currentSession.beginTransaction();

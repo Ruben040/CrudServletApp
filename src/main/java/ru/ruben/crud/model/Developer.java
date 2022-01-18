@@ -1,9 +1,13 @@
 package ru.ruben.crud.model;
 
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import javax.persistence.*;
 import java.util.List;
 
 @Entity(name = "Developers")
+//@Cacheable
+//@org.hibernate.annotations.Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 public class Developer {
 
     @Id
@@ -15,7 +19,7 @@ public class Developer {
     private String lastName;
     @Column(name = "age")
     private int age;
-    @ManyToMany(cascade = CascadeType.REMOVE)
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "dev_prog_lang",
             joinColumns = {@JoinColumn(name = "developer_id")},
             inverseJoinColumns = {@JoinColumn(name = "prog_lang_id")})

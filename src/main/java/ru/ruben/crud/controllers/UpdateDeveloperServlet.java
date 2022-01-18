@@ -1,8 +1,6 @@
 package ru.ruben.crud.controllers;
 
-import org.hibernate.Hibernate;
 import ru.ruben.crud.model.Developer;
-import ru.ruben.crud.model.ProgrammingLanguage;
 import ru.ruben.crud.service.DeveloperService;
 import ru.ruben.crud.service.DeveloperServiceImpl;
 import ru.ruben.crud.service.ProgrammingLanguageService;
@@ -15,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @WebServlet("/updateDeveloper")
 public class UpdateDeveloperServlet extends HttpServlet {

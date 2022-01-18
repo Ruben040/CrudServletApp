@@ -33,11 +33,6 @@ public class ProgrammingLanguageServiceImpl implements ProgrammingLanguageServic
     }
 
     @Override
-    public int getIdByLanguage(String language_name) {
-        return programmingLanguageDAO.getIdByLanguage(language_name);
-    }
-
-    @Override
     public Map<Integer, List<String>> getLanguageByDevelopers(List<Developer> developers) {
         return programmingLanguageDAO.getLanguageByDevelopers(developers);
     }
@@ -54,11 +49,6 @@ public class ProgrammingLanguageServiceImpl implements ProgrammingLanguageServic
             programmingLanguageDAO.updateList(developer, id_lang);
         }
         else developerDao.update(developer);
-    }
-
-    @Override
-    public void deleteLanguageDeveloper(String id, String language) {
-        programmingLanguageDAO.deleteLanguageDeveloper(id, language);
     }
 
 

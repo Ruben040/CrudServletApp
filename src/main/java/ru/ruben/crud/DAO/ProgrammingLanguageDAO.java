@@ -12,7 +12,6 @@ public interface ProgrammingLanguageDAO {
     Map<Integer, List<String>> getLanguageByDevelopers(List<Developer> developers);
     List<String> findByDeveloper(String id);
     void updateList(Developer developer, String[] id_lang);
-    void deleteLanguageDeveloper(String id, String language);
     void saveLanguage(ProgrammingLanguage language);
 
 }

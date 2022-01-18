@@ -7,10 +7,8 @@ import java.util.Map;
 
 public interface ProgrammingLanguageService {
     List<String> findAllLanguage();
-    int getIdByLanguage(String language_name);
     Map<Integer, List<String>> getLanguageByDevelopers(List<Developer> developers);
     List<String> findByDeveloper(String id);
     void updateList(Developer developer, String[] id_lang);
-    void deleteLanguageDeveloper(String id, String language);
     void saveLanguage(String language);
 }

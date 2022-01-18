@@ -2,7 +2,6 @@ package ru.ruben.crud.DAO;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import ru.ruben.crud.model.DevProgrammingLang;
 import ru.ruben.crud.model.DevProgrammingLangId;
 import ru.ruben.crud.model.Developer;
@@ -26,54 +25,95 @@ public class DeveloperDaoImpl implements DeveloperDao {
     @Override
     public Developer findById(String id){
         SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
-        Session currentSession = sessionFactory.openSession();
-        Transaction transaction = currentSession.beginTransaction();
-        Developer developer = currentSession.get(Developer.class, Integer.parseInt(id));
-        transaction.commit();
-        currentSession.close();
-        return developer;
+        Session session = sessionFactory.openSession();
+        try {
+            session.beginTransaction();
+            Developer developer = session.get(Developer.class, Integer.parseInt(id));
+            session.getTransaction().commit();
+            session.close();
+            return developer;
+        } catch (Exception e){
+            session.getTransaction().rollback();
+            session.close();
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public List<Developer> findAll(){
         SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
-        Session currentSession = sessionFactory.openSession();
-        Transaction transaction = currentSession.beginTransaction();
-        List<Developer> from_developers = currentSession.createQuery("from Developers", Developer.class).list();
-        transaction.commit();
-        currentSession.close();
-        return from_developers;
+        Session session = sessionFactory.openSession();
+        try {
+            session.beginTransaction();
+            List<Developer> from_developers = session.createQuery("from Developers", Developer.class).list();
+            session.getTransaction().commit();
+            session.close();
+            return from_developers;
+        }
+        catch (Exception e){
+            session.getTransaction().rollback();
+            session.close();
+            e.printStackTrace();
+            return null;
+        }
+
+
     }
 
     @Override
     public int save(Developer developer){
         SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
-        Session currentSession = sessionFactory.openSession();
-        Transaction transaction = currentSession.beginTransaction();
-        int id = (Integer) currentSession.save(developer);
-        transaction.commit();
-        currentSession.close();
-        return id;
+        Session session = sessionFactory.openSession();
+        try {
+            session.beginTransaction();
+            int id = (Integer) session.save(developer);
+            session.getTransaction().commit();
+            session.close();
+            return id;
+        }
+        catch (Exception e){
+            session.getTransaction().rollback();
+            session.close();
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     @Override
     public void update(Developer developer){
         SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
-        Session currentSession = sessionFactory.openSession();
-        Transaction transaction = currentSession.beginTransaction();
-        currentSession.update(developer);
-        transaction.commit();
-        currentSession.close();
+        Session session = sessionFactory.openSession();
+        try {
+            session.beginTransaction();
+            session.update(developer);
+            session.getTransaction().commit();
+            session.close();
+        }
+        catch (Exception e){
+            session.beginTransaction().rollback();
+            session.close();
+            e.printStackTrace();
+        }
+
     }
 
     @Override
     public void delete(Developer developer){
         SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
-        Session currentSession = sessionFactory.openSession();
-        Transaction transaction = currentSession.beginTransaction();
-        currentSession.delete(developer);
-        transaction.commit();
-        currentSession.close();
+        Session session = sessionFactory.openSession();
+        try {
+            session.beginTransaction();
+            session.delete(developer);
+            session.getTransaction().commit();
+            session.close();
+        }
+        catch (Exception e){
+            session.beginTransaction().rollback();
+            session.close();
+            e.printStackTrace();
+        }
+
     }
 
 
@@ -81,22 +121,40 @@ public class DeveloperDaoImpl implements DeveloperDao {
     public void saveWithLanguage(Developer developer, String[] languages) {
         SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
         Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-        int save = (Integer) session.save(developer);
-        transaction.commit();
-        session.close();
+        int save = 0;
+        try {
+            session.beginTransaction();
+            save = (Integer) session.save(developer);
+            session.getTransaction().commit();
+            session.close();
+        }
+        catch (Exception e){
+            session.getTransaction().rollback();
+            session.close();
+            e.printStackTrace();
+        }
+
         DevProgrammingLang devProgrammingLang = new DevProgrammingLang();
         DevProgrammingLangId devProgrammingLangId = new DevProgrammingLangId();
         devProgrammingLangId.setDeveloperId(save);
+
         for (String lang: languages){
             int idByLanguage = programmingLanguageDAO.getIdByLanguage(lang);
             devProgrammingLangId.setProgLangId(idByLanguage);
             devProgrammingLang.setId(devProgrammingLangId);
             Session session1 = sessionFactory.openSession();
-            Transaction transaction1 = session1.beginTransaction();
-            session1.save(devProgrammingLang);
-            transaction1.commit();
-            session1.close();
+            try {
+                session1.beginTransaction();
+                session1.save(devProgrammingLang);
+                session1.getTransaction().commit();
+                session1.close();
+            }
+            catch (Exception e){
+                session1.getTransaction().rollback();
+                session1.close();
+                e.printStackTrace();
+            }
+
         }
     }
 }

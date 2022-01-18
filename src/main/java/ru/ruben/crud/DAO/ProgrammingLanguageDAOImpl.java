@@ -2,7 +2,6 @@ package ru.ruben.crud.DAO;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import ru.ruben.crud.model.DevProgrammingLang;
 import ru.ruben.crud.model.DevProgrammingLangId;
@@ -29,25 +28,40 @@ public class ProgrammingLanguageDAOImpl implements ProgrammingLanguageDAO{
     public List<ProgrammingLanguage> findAllLanguage(){
         SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
         Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-        List<ProgrammingLanguage> language = session.createQuery("from ProgrammingLanguage", ProgrammingLanguage.class).list();
-        transaction.commit();
-        session.close();
-        return language;
+        try {
+            session.beginTransaction();
+            List<ProgrammingLanguage> language = session.createQuery("from ProgrammingLanguage", ProgrammingLanguage.class).list();
+            session.getTransaction().commit();
+            session.close();
+            return language;
+        }
+        catch (Exception e){
+            session.beginTransaction().rollback();
+            session.close();
+            return null;
+        }
     }
 
     @Override
     public int getIdByLanguage(String language_name){
         SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
         Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-        Query<ProgrammingLanguage> query = session.createQuery("from ProgrammingLanguage where languageName =:lang", ProgrammingLanguage.class);
-        query.setParameter("lang", language_name);
-        ProgrammingLanguage language =(ProgrammingLanguage) query.setMaxResults(1).getSingleResult();
-        int identifier = language.getId();
-        transaction.commit();
-        session.close();
-        return identifier;
+        try {
+            session.beginTransaction();
+            Query<ProgrammingLanguage> query = session.createQuery("from ProgrammingLanguage where languageName =:lang", ProgrammingLanguage.class);
+            query.setParameter("lang", language_name);
+            ProgrammingLanguage language = query.setMaxResults(1).getSingleResult();
+            int identifier = language.getId();
+            session.getTransaction().commit();
+            session.close();
+            return identifier;
+        }
+        catch (Exception e){
+            session.getTransaction().rollback();
+            session.close();
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     @Override
@@ -65,16 +79,25 @@ public class ProgrammingLanguageDAOImpl implements ProgrammingLanguageDAO{
     public List<String> findByDeveloper(String id){
         List<String> lang = new ArrayList<>();
         SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
-        Session currentSession = sessionFactory.openSession();
-        Transaction transaction = currentSession.beginTransaction();
-        Developer developer = currentSession.get(Developer.class, Integer.parseInt(id));
-        List<ProgrammingLanguage> programmingLanguages = developer.getProgrammingLanguages();
-        for (ProgrammingLanguage programmingLanguage: programmingLanguages){
-            lang.add(programmingLanguage.getLanguageName());
+        Session session = sessionFactory.openSession();
+        try {
+
+            session.beginTransaction();
+            Developer developer = session.get(Developer.class, Integer.parseInt(id));
+            List<ProgrammingLanguage> programmingLanguages = developer.getProgrammingLanguages();
+            for (ProgrammingLanguage programmingLanguage : programmingLanguages) {
+                lang.add(programmingLanguage.getLanguageName());
+            }
+            session.getTransaction().commit();
+            session.close();
+            return lang;
         }
-        transaction.commit();
-        currentSession.close();
-        return lang;
+        catch (Exception e){
+            session.getTransaction().rollback();
+            session.close();
+            e.printStackTrace();
+            return null;
+        }
     }
 
 
@@ -86,42 +109,40 @@ public class ProgrammingLanguageDAOImpl implements ProgrammingLanguageDAO{
         devProgrammingLangId.setDeveloperId(id);
         SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
         Session session = sessionFactory.openSession();
-        session.beginTransaction();
-        session.update(developer);
-        session.getTransaction().commit();
-        for (String lang: languages){
+        try {
             session.beginTransaction();
-            devProgrammingLangId.setProgLangId(getIdByLanguage(lang));
-            devProgrammingLang.setId(devProgrammingLangId);
-            session.merge(devProgrammingLang);
+            session.update(developer);
             session.getTransaction().commit();
+            for (String lang : languages) {
+                session.beginTransaction();
+                devProgrammingLangId.setProgLangId(getIdByLanguage(lang));
+                devProgrammingLang.setId(devProgrammingLangId);
+                session.merge(devProgrammingLang);
+                session.getTransaction().commit();
+            }
+            session.close();
         }
-        session.close();
-    }
-
-    @Override
-    public void deleteLanguageDeveloper(String id, String language){
-        int idByLanguage1 = getIdByLanguage(language);
-        SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-        DevProgrammingLangId devProgrammingLangId = new DevProgrammingLangId();
-        devProgrammingLangId.setDeveloperId(Integer.parseInt(id));
-        devProgrammingLangId.setProgLangId(idByLanguage1);
-        DevProgrammingLang devProgrammingLang = new DevProgrammingLang();
-        devProgrammingLang.setId(devProgrammingLangId);
-        session.delete(devProgrammingLang);
-        transaction.commit();
-        session.close();
+        catch (Exception e){
+            session.getTransaction().rollback();
+            session.close();
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void saveLanguage(ProgrammingLanguage language) {
         SessionFactory sessionFactory = HibernateConnector.getSessionFactory();
         Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-        session.save(language);
-        transaction.commit();
-        session.close();
+        try {
+            session.beginTransaction();
+            session.save(language);
+            session.beginTransaction().commit();
+            session.close();
+        }
+        catch (Exception e){
+            session.getTransaction().commit();
+            session.close();
+            e.printStackTrace();
+        }
     }
 }

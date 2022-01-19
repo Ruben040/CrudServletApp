@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>JSP - Hello World</title>
+    <title>Hello</title>
 </head>
 <body>
 <a href="/Crud_war/allDevelopers">List Developers</a>

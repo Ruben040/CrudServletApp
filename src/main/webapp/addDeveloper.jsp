@@ -9,7 +9,7 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <html>
 <head>
-    <title>Title</title>
+    <title>Add-Developer</title>
 </head>
 <body>
 <a href="/Crud_war/allDevelopers">List Developers</a>
